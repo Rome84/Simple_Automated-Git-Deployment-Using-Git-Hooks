@@ -1,0 +1,19 @@
+You might also want to append the $BRANCH name to the end of git command, so that to make sure it checks out the expected branch. 
+I had waste some time on this, because I had set my default branch to "master" while I'd like to deploy with another branch called "deploy".
+
+#!/bin/bash
+TRAGET="/home/webuser/deploy-folder"
+GIT_DIR="/home/webuser/www.git"
+BRANCH="master"
+
+while read oldrev newrev ref
+do
+	# only checking out the master (or whatever branch you would like to deploy)
+	if [[ $ref = refs/heads/$BRANCH ]];
+	then
+		echo "Ref $ref received. Deploying ${BRANCH} branch to production..."
+		git --work-tree=$TRAGET --git-dir=$GIT_DIR checkout -f $BRANCH
+	else
+		echo "Ref $ref received. Doing nothing: only the ${BRANCH} branch may be deployed on this server."
+	fi
+done
