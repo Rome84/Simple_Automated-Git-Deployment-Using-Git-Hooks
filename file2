@@ -1,0 +1,20 @@
+Hi, If you're here looking for make deployment to same server but different branch, this worked for me
+
+#!/bin/bash
+while read oldrev newrev ref
+do
+    # only checking out the master (or whatever branch you would like to deploy)
+    if [[ $ref = refs/heads/master ]];
+    then
+        echo "Master ref received.  Deploying master branch to production..."
+        git --work-tree=/home/webuser/public --git-dir=/home/webuser/www.git checkout -f master
+    else
+        if [[ $ref = refs/heads/sandbox ]];
+        then
+                echo "Sandbox ref received. Deploying sandbox branch to beta..."
+                git --work-tree=/home/webuser/beta --git-dir=/home/webuser/www.git checkout -f sandbox
+        else
+                echo "Ref $ref successfully received.  Doing nothing: only the master branch may be deployed on this server."
+        fi
+    fi
+done
